@@ -23,7 +23,7 @@ func GetAllInfoList(c *gin.Context)  {
 	if err != nil || page < 1 {
 		page = 1
 	}
-	pageSize, err := strconv.Atoi(c.DefaultQuery("page_size", "10"))
+	pageSize, err := strconv.Atoi(c.DefaultQuery("size", "10"))
 	if err != nil || pageSize < 1 {
 		pageSize = 10
 	}
@@ -46,7 +46,7 @@ func GetAllInfoList(c *gin.Context)  {
 	// 返回分页结果
 	c.JSON(http.StatusOK, gin.H{
 		"page":      page,
-		"page_size": pageSize,
+		"size": pageSize,
 		"total":     total,
 		"videos":    videos,
 	})
