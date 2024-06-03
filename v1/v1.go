@@ -8,6 +8,12 @@ import (
 	"strconv"
 )
 
+func ShowHomePage(c *gin.Context)  {
+	c.HTML(http.StatusOK,"index.html",gin.H{
+		"title":"Home Page",
+	})
+}
+
 func ShowAddProductPage(c *gin.Context)  {
 	c.HTML(http.StatusOK,"add.html",gin.H{
 		"title":"Add Product",

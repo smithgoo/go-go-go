@@ -14,6 +14,7 @@ func InitRouter(r *gin.Engine) {
 
 	GroupV1 := r.Group("/v1")
 	{
+		GroupV1.GET("/homePage",v1.ShowHomePage)
 		GroupV1.GET("/product/add", v1.ShowAddProductPage)
 		GroupV1.GET("/products",v1.ListProducts)
 		GroupV1.POST("/product/add",v1.AddProduct)
