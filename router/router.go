@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/gin-gonic/gin"
+	v2 "go-go-go/v2"
 	v1 "go-go-go/v1"
 )
 import _ "net/url"
@@ -24,6 +25,11 @@ func InitRouter(r *gin.Engine) {
 		GroupV1.POST("/product/edit/:id", v1.EditProduct)
 		GroupV1.GET("/products/search",v1.SearchGetProductWithKw)
 		GroupV1.POST("/products/search",v1.SearchProductWithKw)
+	}
+
+	GroupV2 := r.Group("/v2")
+	{
+		GroupV2.GET("/getAllList",v2.GetAllInfoList)
 	}
 
 }

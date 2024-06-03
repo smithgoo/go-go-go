@@ -7,7 +7,7 @@ import "log"
 var DB *gorm.DB
 
 func InitDB(){
-	dsn := "root:Jbnb123456@tcp(127.0.0.1:3306)/GODB?charset=utf8&parseTime=True&loc=Local"
+	dsn := "root:Jbnb123456@tcp(127.0.0.1:3306)/DBInfo?charset=utf8&parseTime=True&loc=Local"
 	var err error
 	DB,err = gorm.Open(mysql.Open(dsn),&gorm.Config{})
 	if err !=nil {
