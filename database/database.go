@@ -71,3 +71,35 @@ func Paginate(c *gin.Context, db *gorm.DB, model interface{}, out interface{}) (
 		Data:     out,
 	}, nil
 }
+
+
+func PaginateSearch(c *gin.Context, db *gorm.DB, model interface{}, out interface{}, query *gorm.DB) (PaginatedResult, error) {
+	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if err != nil || page < 1 {
+		page = 1
+	}
+	size, err := strconv.Atoi(c.DefaultQuery("page_size", "10"))
+	if err != nil || size < 1 {
+		size = 10
+	}
+
+	offset := (page - 1) * size
+
+	var total int64
+	result := query.Model(model).Count(&total)
+	if result.Error != nil {
+		return PaginatedResult{}, result.Error
+	}
+
+	result = query.Limit(size).Offset(offset).Find(out)
+	if result.Error != nil {
+		return PaginatedResult{}, result.Error
+	}
+
+	return PaginatedResult{
+		Page:     page,
+		Size: size,
+		Total:    total,
+		Data:     out,
+	}, nil
+}

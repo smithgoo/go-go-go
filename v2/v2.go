@@ -43,13 +43,13 @@ func SearchVideoByName(c *gin.Context)  {
 	if keyword != "" {
 		keywordPattern := "%" + keyword + "%"
 		query = query.Where(
-			database.DB.Where("nickName LIKE ?", keywordPattern).
+			database.DB.Where("address LIKE ?", keywordPattern).
 				Or("content LIKE ?", keywordPattern).
 				Or("title LIKE ?", keywordPattern),
 		)
 	}
 
-	paginatedResult, err := database.Paginate(c, database.DB, &models.Product{}, &products)
+	paginatedResult, err := database.PaginateSearch(c, database.DB, &models.Product{}, &products,query)
 	if err != nil {
 		log.Println("Error fetching products:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
