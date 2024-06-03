@@ -1,8 +1,10 @@
 package database
 
 import (
+	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm/logger"
+	"strconv"
 )
 import "gorm.io/gorm"
 import "log"
@@ -30,4 +32,42 @@ func InitDB(user,password,host,dbName string){
 	//	log.Fatal("Failed to connect to database:",err)
 	//}
 	//log.Println("Database connected successfully!")
+}
+
+type PaginatedResult struct {
+	Page      int         `json:"page"`
+	Size  int         `json:"size"`
+	Total     int64       `json:"total"`
+	Data      interface{} `json:"data"`
+}
+
+func Paginate(c *gin.Context, db *gorm.DB, model interface{}, out interface{}) (PaginatedResult, error) {
+	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if err != nil || page < 1 {
+		page = 1
+	}
+	size, err := strconv.Atoi(c.DefaultQuery("size", "10"))
+	if err != nil || size < 1 {
+		size = 10
+	}
+
+	offset := (page - 1) * size
+
+	var total int64
+	result := db.Model(model).Count(&total)
+	if result.Error != nil {
+		return PaginatedResult{}, result.Error
+	}
+
+	result = db.Limit(size).Offset(offset).Find(out)
+	if result.Error != nil {
+		return PaginatedResult{}, result.Error
+	}
+
+	return PaginatedResult{
+		Page:     page,
+		Size: size,
+		Total:    total,
+		Data:     out,
+	}, nil
 }
