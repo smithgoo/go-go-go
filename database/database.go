@@ -1,6 +1,9 @@
 package database
 
-import "gorm.io/driver/mysql"
+import (
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm/logger"
+)
 import "gorm.io/gorm"
 import "log"
 
@@ -12,7 +15,9 @@ func InitDB(user,password,host,dbName string){
 	dsn := user + ":" + password + "@tcp(" + host + ")/" + dbName + "?charset=utf8&parseTime=True&loc=Local"
 	println("DSN: ", dsn)  // For debugging purposes
 	var err error
-	DB,err = gorm.Open(mysql.Open(dsn),&gorm.Config{})
+	DB,err = gorm.Open(mysql.Open(dsn),&gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 	if err !=nil {
 		log.Fatal("Failed to connect to database:",err)
 	}

@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-go-go/database"
 	"go-go-go/models"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -117,21 +118,26 @@ func EditProduct(c *gin.Context) {
 
 func SearchGetProductWithKw(c *gin.Context){
 	c.HTML(http.StatusOK,"search.html",gin.H{
-		"title":"Add Product",
+		"title":"search Product",
 	})
 }
 
 func SearchProductWithKw(c *gin.Context){
+	println("search action ~~~~~~~~~~~~~~~~")
 	var products []models.Product
-	keyword := c.Query("keyword")
+	keyword := c.PostForm("keyword")
+
+	log.Println("Search keyword:", keyword)
 	if keyword != "" {
-		database.DB.Where("name LIKE ?","%"+keyword+"%").Find(&products)
+		query := "%" + keyword + "%"
+		log.Println("Search query:", query)
+		database.DB.Where("name LIKE ?", query).Find(&products)
 	} else {
 		database.DB.Find(&products)
 	}
-	//c.JSON(http.StatusOK,products)
-	c.HTML(http.StatusOK,"search.html",gin.H{
-		"products":products,
+
+	c.HTML(http.StatusOK, "search.html", gin.H{
+		"products": products,
 	})
 }
 
