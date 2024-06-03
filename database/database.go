@@ -6,12 +6,23 @@ import "log"
 
 var DB *gorm.DB
 
-func InitDB(){
-	dsn := "root:Jbnb123456@tcp(127.0.0.1:3306)/DBInfo?charset=utf8&parseTime=True&loc=Local"
+func InitDB(user,password,host,dbName string){
+	//dsn := "root:Jbnb123456@tcp(127.0.0.1:3306)/GODB?charset=utf8&parseTime=True&loc=Local"
+
+	dsn := user + ":" + password + "@tcp(" + host + ")/" + dbName + "?charset=utf8&parseTime=True&loc=Local"
+	println("DSN: ", dsn)  // For debugging purposes
 	var err error
 	DB,err = gorm.Open(mysql.Open(dsn),&gorm.Config{})
 	if err !=nil {
 		log.Fatal("Failed to connect to database:",err)
 	}
 	log.Println("Database connected successfully!")
+
+
+	//var err error
+	//DB,err = gorm.Open(mysql.Open(dsn),&gorm.Config{})
+	//if err !=nil {
+	//	log.Fatal("Failed to connect to database:",err)
+	//}
+	//log.Println("Database connected successfully!")
 }
