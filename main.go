@@ -14,7 +14,7 @@ import (
 func main() {
 
 	database.InitDB( "root", "Jbnb123456", "127.0.0.1:3306","DBInfo")
-	database.InitDB( "root", "Jbnb123456", "127.0.0.1:3306","GODB")
+	//database.InitDB( "root", "Jbnb123456", "127.0.0.1:3306","GODB")
 
 	database.DB.AutoMigrate(&models.Product{},&videoModels.VideoInfo{})
 
