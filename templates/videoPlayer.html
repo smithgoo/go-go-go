@@ -3,8 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <title>播放器</title>
+    <link href="https://vjs.zencdn.net/7.15.4/video-js.css" rel="stylesheet">
+    <style>
+        .video-js {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        .vjs-control-bar {
+            display: flex !important;
+        }
+        .vjs-fullscreen-control {
+            display: inline-block !important;
+        }
+    </style>
 </head>
 <body>
-    <h4>{{.info.Title}}</h4>
+<h4 id="video-title">{{.Title}}</h4>
+<p>{{.Title}}</p>
+<video id="my-video" class="video-js vjs-default-skin" controls preload="auto">
+    <source id="video-source" type="application/x-mpegURL">
+</video>
+
+<script src="https://vjs.zencdn.net/7.15.4/video.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script>
+
+    function processAddress(address) {
+        if (address.includes("#")) {
+            return address.split("#")[0];
+        } else {
+            return address;
+        }
+    }
+
+    var data = {
+        "info": {
+            "Title": {{.Title}},
+            "Address": processAddress(.Address)
+        }
+    };
+
+
+    document.getElementById('video-title').innerText = data.info.Title;
+
+    var addressPart = data.info.Address.includes("#") ? data.info.Address.split("#")[0] : data.info.Address;
+    var video = document.getElementById('my-video');
+    var videoSource = document.getElementById('video-source');
+
+    if (Hls.isSupported()) {
+        var hls = new Hls();
+        hls.loadSource(addressPart);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, function() {
+            video.play();
+        });
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        videoSource.src = addressPart;
+        video.addEventListener('canplay', function() {
+            video.play();
+        });
+    }
+</script>
 </body>
 </html>

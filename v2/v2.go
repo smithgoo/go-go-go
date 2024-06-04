@@ -1,12 +1,15 @@
 package v2
 
 import (
-	//"fmt" 
+	//"fmt"
 	"github.com/gin-gonic/gin"
 	"go-go-go/models"
 	"go-go-go/videoModels"
 	"go-go-go/database"
 	"log"
+	"net/url"
+	"strings"
+
 	//"strconv"
 
 	"net/http"
@@ -73,16 +76,30 @@ func PlayActionClick(c *gin.Context) {
 	queryParams := c.Request.URL.Query()
 
 	for key, value := range queryParams {
-		log.Printf("Key: %s, Value: %s\n", key, value)
+		//log.Printf("Key: %s, Value: %s\n", key, value)
+		if key == "Address" {
+			queryParams["Address"] =  strings.Split(value[0],"#")
+		}
 	}
+	queryParamsString := queryParams.Encode()
 
-	//c.JSON(http.StatusOK, gin.H{
-	//	"message": "Parameters received",
-	//	"params":  queryParams,
-	//})
-
+	// 使用 log.Printf 打印编码后的字符串
+	paramsMap, err := url.ParseQuery(queryParamsString)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("paramsMap: %s", paramsMap)
+	//c.JSON(http.StatusOK, paramsMap)
+	//queryParamsJSON, err := json.Marshal(queryParamsString)
+	//if err != nil {
+	//	log.Printf("Error marshaling query params to JSON: %v", err)
+	//	//http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	//	return
+	//}
+	//log.Printf("queryParamsJSON: %s", queryParamsJSON)
+	//
 	c.HTML(http.StatusOK, "videoPlayer.html", gin.H{
-		"info": queryParams,
+		"info": paramsMap,
 	})
 }
 
