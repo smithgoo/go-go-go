@@ -3,8 +3,8 @@ package v2
 import (
 	//"fmt"
 	"github.com/gin-gonic/gin"
+	models2 "go-go-go/models"
 	"go-go-go/models"
-	"go-go-go/videoModels"
 	"go-go-go/database"
 	"log"
 	"net/url"
@@ -24,9 +24,9 @@ func PingPong(c *gin.Context) {
 }
 
 func GetAllInfoList(c *gin.Context)  {
-	var videos []videoModels.VideoInfo
+	var videos []models2.VideoInfo
 
-	paginatedResult, err := database.Paginate(c, database.DB, &videoModels.VideoInfo{}, &videos)
+	paginatedResult, err := database.Paginate(c, database.DB, &models2.VideoInfo{}, &videos)
 	if err != nil {
 		log.Println("Error fetching videos:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
@@ -47,7 +47,7 @@ func SearchVideoHtml(c *gin.Context)  {
 }
 
 func SearchVideoByName(c *gin.Context)  {
-	var products []videoModels.VideoInfo
+	var products []models2.VideoInfo
 	keyword := c.PostForm("keyword")
 
 	query := database.DB

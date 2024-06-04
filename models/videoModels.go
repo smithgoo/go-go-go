@@ -1,4 +1,4 @@
-package videoModels
+package models
 
 import "gorm.io/gorm"
 
