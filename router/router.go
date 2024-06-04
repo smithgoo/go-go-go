@@ -32,6 +32,7 @@ func InitRouter(r *gin.Engine) {
 		GroupV2.GET("/getAllList",v2.GetAllInfoList)
 		GroupV2.GET("/searchVideos",v2.SearchVideoHtml)
 		GroupV2.POST("/searchVideos",v2.SearchVideoByName)
+		GroupV2.GET("/videoPlayer",v2.PlayActionClick)
 	}
 
 }

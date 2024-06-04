@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        function splitAddress() {
+            // 获取所有包含地址的隐藏元素
+            const addressElements = document.querySelectorAll('[data-address]');
+
+            addressElements.forEach(el => {
+                const address = el.dataset.address;
+                const addressPart = address.includes("#") ? address.split("#")[0] : address;
+                // 将拆分后的地址插入到相应的单元格中
+                el.textContent = addressPart;
+            });
+        }
+        window.onload = splitAddress;
+
+        function playVideo(product) {
+            // 构建 URL 查询字符串
+            let queryString = '';
+            for (const key in product) {
+                if (Object.hasOwnProperty.call(product, key)) {
+                    queryString += key + '=' + encodeURIComponent(product[key]) + '&';
+                }
+            }
+            // 去掉最后一个 "&" 符号
+            queryString = queryString.slice(0, -1);
+
+            // 在 URL 中添加查询字符串，并重定向到新的 URL
+            window.location.href = "/v2/videoPlayer?" + queryString;
+        }
+
+        // async function playVideo(product) {
+        //     try {
+        //         const response = await fetch("/v2/videoPlayer", {
+        //             method: "POST",
+        //             headers: {
+        //                 "Content-Type": "application/json",
+        //             },
+        //             body: JSON.stringify(product),
+        //         });
+        //
+        //         if (!response.ok) {
+        //             throw new Error("Network response was not ok " + response.statusText);
+        //         }
+        //
+        //         const result = await response.json();
+        //         // Assuming the server returns a URL to redirect to
+        //         if (result.redirectUrl) {
+        //             window.location.href = result.redirectUrl;
+        //         } else {
+        //             console.log("No redirect URL provided.");
+        //         }
+        //     } catch (error) {
+        //         console.error("There was a problem with the fetch operation:", error);
+        //     }
+        // }
+
+    </script>
+</head>
+<body>
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Cover</th>
+        <th>Address</th>
+        <th>Actions</th>
+    </tr>
+    {{ range $index, $product := .products }}
+    <tr>
+        <td>{{ .ID }}</td>
+        <td>{{ .Title }}</td>
+        <td>{{ .Cover }}</td>
+        <td data-address="{{ .Address }}"></td>
+        <td>
+            <button type="button" onclick='playVideo({
+                "ID": "{{ $product.ID }}",
+                "Title": "{{ $product.Title }}",
+                "Cover": "{{ $product.Cover }}",
+                "Address": "{{ $product.Address }}"
+            })'>播放</button>
+        </td>
+    </tr>
+    {{ end }}
+</table>
+</body>
+</html>

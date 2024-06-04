@@ -1,12 +1,17 @@
 package v2
 
 import (
+	//"fmt" 
 	"github.com/gin-gonic/gin"
 	"go-go-go/models"
 	"go-go-go/videoModels"
 	"go-go-go/database"
 	"log"
+	//"strconv"
+
 	"net/http"
+	//"strconv"
+	//"encoding/json"
 )
 
 func PingPong(c *gin.Context) {
@@ -25,7 +30,10 @@ func GetAllInfoList(c *gin.Context)  {
 		return
 	}
 
-	c.JSON(http.StatusOK, paginatedResult)
+	//c.JSON(http.StatusOK, paginatedResult.Data)
+	c.HTML(http.StatusOK,"videoInfoList.html",gin.H{
+		"products":paginatedResult.Data,
+	})
 
 }
 
@@ -57,4 +65,24 @@ func SearchVideoByName(c *gin.Context)  {
 	}
 
 	c.JSON(http.StatusOK, paginatedResult)
+
 }
+
+
+func PlayActionClick(c *gin.Context) {
+	queryParams := c.Request.URL.Query()
+
+	for key, value := range queryParams {
+		log.Printf("Key: %s, Value: %s\n", key, value)
+	}
+
+	//c.JSON(http.StatusOK, gin.H{
+	//	"message": "Parameters received",
+	//	"params":  queryParams,
+	//})
+
+	c.HTML(http.StatusOK, "videoPlayer.html", gin.H{
+		"info": queryParams,
+	})
+}
+
