@@ -7,7 +7,7 @@ import (
 	v1 "go-go-go/v1"
 	"fmt"
 	"time"
-	//"go-go-go/middleware"
+	"go-go-go/middleware"
 	"go-go-go/handlers"
 )
 import _ "net/url"
@@ -32,9 +32,19 @@ func InitRouter(r *gin.Engine) {
 		)
 	}))
 
+	GroupV3 := r.Group("/user")
+	{
+		GroupV3.GET("/register", handlers.ShowRegisterPage)
+		GroupV3.GET("/login", handlers.ShowLoginPage)
+
+		GroupV3.POST("/register",handlers.Register)
+		GroupV3.POST("/login",handlers.Login)
+		GroupV3.GET("/home",middleware.AuthMiddleware(),handlers.Home)
+	}
+
 	GroupV1 := r.Group("/v1")
 	{
-		GroupV1.GET("/homePage",v1.ShowHomePage)
+		GroupV1.GET("/homePage",middleware.AuthMiddleware(),v1.ShowHomePage)
 		GroupV1.GET("/product/add", v1.ShowAddProductPage)
 		GroupV1.GET("/products",v1.ListProducts)
 		GroupV1.POST("/product/add",v1.AddProduct)
@@ -54,14 +64,6 @@ func InitRouter(r *gin.Engine) {
 		GroupV2.GET("/videoPlayer",v2.PlayActionClick)
 	}
 
-	GroupV3 := r.Group("/user")
-	{
-		GroupV3.GET("/register", handlers.ShowRegisterPage)
-		GroupV3.GET("/login", handlers.ShowLoginPage)
 
-		GroupV3.POST("/register",handlers.Register)
-		GroupV3.POST("/login",handlers.Login)
-		//GroupV3.GET("/home",middleware.AuthMiddleware(),handlers.Home)
-	}
 
 }
