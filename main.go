@@ -17,7 +17,7 @@ func main() {
 	database.InitDB( "root", "Jbnb123456", "127.0.0.1:3306","DBInfo")
 	//database.InitDB( "root", "Jbnb123456", "127.0.0.1:3306","GODB")
 
-	database.DB.AutoMigrate(&models.Product{},&models2.VideoInfo{})
+	database.DB.AutoMigrate(&models.Product{},&models2.VideoInfo{},&models2.User{})
 
 	r := gin.Default()
 	//r.Use(gin.Recovery())

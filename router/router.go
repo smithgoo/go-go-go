@@ -7,6 +7,8 @@ import (
 	v1 "go-go-go/v1"
 	"fmt"
 	"time"
+	//"go-go-go/middleware"
+	"go-go-go/handlers"
 )
 import _ "net/url"
 import _ "strconv"
@@ -50,6 +52,16 @@ func InitRouter(r *gin.Engine) {
 		GroupV2.GET("/searchVideos",v2.SearchVideoHtml)
 		GroupV2.POST("/searchVideos",v2.SearchVideoByName)
 		GroupV2.GET("/videoPlayer",v2.PlayActionClick)
+	}
+
+	GroupV3 := r.Group("/user")
+	{
+		GroupV3.GET("/register", handlers.ShowRegisterPage)
+		GroupV3.GET("/login", handlers.ShowLoginPage)
+
+		GroupV3.POST("/register",handlers.Register)
+		GroupV3.POST("/login",handlers.Login)
+		//GroupV3.GET("/home",middleware.AuthMiddleware(),handlers.Home)
 	}
 
 }
