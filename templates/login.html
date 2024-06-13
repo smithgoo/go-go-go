@@ -2,6 +2,21 @@
 <html>
 <head>
     <title>Login</title>
+    <script>
+        function fetchCaptcha() {
+            fetch('/user/captcha')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('captchaImage').src = data.captcha_image;
+                    document.getElementById('captchaID').value = data.captcha_id;
+                })
+                .catch(error => console.error('Error fetching captcha:', error));
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            fetchCaptcha();
+        });
+    </script>
 </head>
 <body>
 <h1>Login</h1>
@@ -10,6 +25,13 @@
     <input type="text" name="email" required><br>
     <label>Password:</label>
     <input type="password" name="password" required><br>
+
+    <div id="captcha-container">
+        <img id="captchaImage" src="" alt="Captcha Image">
+    </div>
+    <label for="captcha">Captcha:</label>
+    <input type="text" id="captchaAnswer" name="captcha_answer" required><br><br>
+    <input type="hidden" id="captchaID" name="captcha_id">
     <input type="submit" value="Login">
 </form>
 </body>

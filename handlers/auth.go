@@ -73,11 +73,28 @@ func Register(c *gin.Context) {
 
 func Login(c *gin.Context) {
 	var user models.User
+	var captchaResponse struct {
+		CaptchaID     string `form:"captcha_id" binding:"required"`
+		CaptchaAnswer string `form:"captcha_answer" binding:"required"`
+	}
+
 	if err := c.ShouldBind(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	log.Printf("User data: %+v\n", user)  // 调试绑定数据
+
+	if err := c.ShouldBind(&captchaResponse); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// 验证验证码
+	if !captcha.VerifyString(captchaResponse.CaptchaID, captchaResponse.CaptchaAnswer) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid captcha"})
+		return
+	}
+
 
 	// 获取表单中输入的邮箱或手机号
 	emailOrPhone := user.Email
