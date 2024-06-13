@@ -43,6 +43,8 @@ func InitRouter(r *gin.Engine) {
 		GroupV3.GET("/resetPwd",handlers.ShowResetPwdPage)
 		GroupV3.POST("/resetPwd",handlers.ReplacePwd)
 
+		GroupV3.GET("/captcha", handlers.GenerateCaptcha)
+
 		GroupV3.GET("/home",middleware.AuthMiddleware(),handlers.Home)
 	}
 

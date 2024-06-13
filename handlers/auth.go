@@ -1,8 +1,11 @@
 package handlers
 
 import (
+	"bytes"
 	"crypto/md5"
+	"encoding/base64"
 	"encoding/hex"
+	"github.com/dchest/captcha"
 	"go-go-go/models"
 	"go-go-go/utils"
 	"go-go-go/database"
@@ -32,8 +35,24 @@ func hashPassword(password string) string {
 
 func Register(c *gin.Context) {
 	var user models.User
+	var captchaResponse struct {
+		CaptchaID     string `form:"captcha_id" binding:"required"`
+		CaptchaAnswer string `form:"captcha_answer" binding:"required"`
+	}
+
 	if err := c.ShouldBind(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := c.ShouldBind(&captchaResponse); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// 验证验证码
+	if !captcha.VerifyString(captchaResponse.CaptchaID, captchaResponse.CaptchaAnswer) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid captcha"})
 		return
 	}
 
@@ -50,6 +69,7 @@ func Register(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "registration successful"})
 }
+
 
 func Login(c *gin.Context) {
 	var user models.User
@@ -119,3 +139,19 @@ func ReplacePwd(c *gin.Context)  {
 
 }
 
+
+// GenerateCaptcha 生成验证码并返回验证码 ID 和验证码图像
+func GenerateCaptcha(c *gin.Context) {
+	captchaID := captcha.New()
+	var content bytes.Buffer
+	if err := captcha.WriteImage(&content, captchaID, 240, 80); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate captcha image"})
+		return
+	}
+	captchaImage := base64.StdEncoding.EncodeToString(content.Bytes())
+
+	c.JSON(http.StatusOK, gin.H{
+		"captcha_id":    captchaID,
+		"captcha_image": "data:image/png;base64," + captchaImage,
+	})
+}
