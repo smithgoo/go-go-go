@@ -20,6 +20,11 @@ func ShowLoginPage(c *gin.Context) {
 	c.HTML(http.StatusOK, "login.html", nil)
 }
 
+func ShowResetPwdPage(c *gin.Context) {
+	c.HTML(http.StatusOK, "resetPwd.html", nil)
+}
+
+
 func hashPassword(password string) string {
 	hash := md5.Sum([]byte(password))
 	return hex.EncodeToString(hash[:])
@@ -80,5 +85,37 @@ func Login(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"token": token, "userId": dbUser.ID})
+}
+
+func ReplacePwd(c *gin.Context)  {
+	var user models.User
+	if err := c.ShouldBind(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	log.Printf("User data: %+v\n", user)  // 调试绑定数据
+
+	phone := user.Phone
+	email := user.Email
+	pwd := user.Password
+
+	var dbUser models.User
+	// 使用邮箱或手机号进行查询
+	if err := database.DB.Where("email = ? AND phone = ?", email, phone).First(&dbUser).Error; err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
+		return
+	}
+
+	hashedPassword := hashPassword(pwd)
+	dbUser.Password = hashedPassword
+
+	if err := database.DB.Save(&dbUser).Error; err !=nil {
+		log.Print("updating pwd error:%v\n",err)
+		c.JSON(http.StatusInternalServerError,gin.H{"error":err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK,gin.H{"message":"pwd reset successfull!"})
+
 }
 

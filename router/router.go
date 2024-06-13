@@ -39,6 +39,10 @@ func InitRouter(r *gin.Engine) {
 
 		GroupV3.POST("/register",handlers.Register)
 		GroupV3.POST("/login",handlers.Login)
+
+		GroupV3.GET("/resetPwd",handlers.ShowResetPwdPage)
+		GroupV3.POST("/resetPwd",handlers.ReplacePwd)
+
 		GroupV3.GET("/home",middleware.AuthMiddleware(),handlers.Home)
 	}
 
