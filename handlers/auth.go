@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"go-go-go/models"
 	"go-go-go/utils"
 	"go-go-go/database"
@@ -18,12 +20,20 @@ func ShowLoginPage(c *gin.Context) {
 	c.HTML(http.StatusOK, "login.html", nil)
 }
 
+func hashPassword(password string) string {
+	hash := md5.Sum([]byte(password))
+	return hex.EncodeToString(hash[:])
+}
+
 func Register(c *gin.Context) {
 	var user models.User
 	if err := c.ShouldBind(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	// 对密码进行 MD5 哈希处理
+	user.Password = hashPassword(user.Password)
 
 	log.Printf("User data: %+v\n", user)  // 调试绑定数据
 
@@ -54,7 +64,11 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	if dbUser.Password != user.Password {
+	// 对输入的密码进行 MD5 哈希处理
+	hashedPassword := hashPassword(user.Password)
+	//log.Printf("hashedPassword: %+v\n", hashedPassword)  // 调试绑定数据
+	//log.Printf("shashedPassword: %+v\n", dbUser.Password)  // 调试绑定数据
+	if dbUser.Password != hashedPassword {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
 		return
 	}
