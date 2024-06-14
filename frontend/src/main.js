@@ -11,8 +11,9 @@ import UserRegister from './components/UserRegister.vue';
 const router = createRouter({
     history: createWebHistory(),
     routes: [
-        { path: '/login', component: UserLogin },
+        { path: '/', redirect: '/register' },
         { path: '/register', component: UserRegister },
+        { path: '/login', component: UserLogin },
         // 可以根据需要添加其他路由
     ],
 });
