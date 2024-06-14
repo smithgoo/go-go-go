@@ -2,20 +2,18 @@
   <div>
     <h1>Register</h1>
     <form @submit.prevent="login">
-      <label>Email:</label>
-      <input type="email" v-model="email" required><br>
-       <label>Phone:</label>
-      <input type="phone" v-model="phone" required><br>
-      <label>Password:</label>
-      <input type="password" v-model="password" required><br>
-      
-      <div id="captcha-container">
-        <img :src="captchaImageSrc" alt="Captcha Image" v-if="captchaImageSrc">
-      </div>
-      <label for="captcha">Captcha:</label>
-      <input type="text" v-model="captchaAnswer" id="captchaAnswer" name="captcha_answer" required><br><br>
-      <input type="hidden" v-model="captchaID" id="captchaID" name="captcha_id">
-      <button type="submit">Login</button>
+        <van-cell-group>
+        <van-field v-model="email" label="Email" type="mail" placeholder="Enter your email" required />
+        <van-field v-model="phone" label="Phone" type="tel" placeholder="Enter your phone" required />
+        <van-field v-model="password" label="Password" type="password" placeholder="Enter your password" required />
+        <van-field v-model="captchaAnswer" label="CaptchaAnswer" type="text" placeholder="Enter your captchaAnswer" required />
+        
+        <div id="captcha-container">
+            <img :src="captchaImageSrc" alt="Captcha Image" v-if="captchaImageSrc">
+        </div> 
+        <input type="hidden" v-model="captchaID" id="captchaID" name="captcha_id">
+             <van-button type="primary" native-type="submit">Register</van-button>
+        </van-cell-group>
     </form>
     <p v-if="message">{{ message }}</p>
     <p v-if="error">{{ error }}</p>
@@ -23,7 +21,8 @@
 </template>
 
 <script>
-import axios from './axios';
+import axios from './axios'; 
+import { Toast } from 'vant';
 
 export default {
   data() {
@@ -54,14 +53,12 @@ export default {
       axios.post('/user/register', formData)
         .then(response => {
           console.log(response.data);
-        
+        Toast.success('Register Successfull!');
         })
         .catch(error => {
-          this.message = '';
-          this.error = 'Login failed. Please check your credentials.';
-          console.error('Error logging in:', error);
-          console.error(this.email);
-          console.error(this.password);
+          this.message = ''; 
+          console.error('Error logging in:', error.message); 
+          Toast.fail(error.message);
         });
     },
     fetchCaptcha() {
