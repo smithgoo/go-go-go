@@ -1,11 +1,14 @@
 <template>
   <div>
-    <h1>Login</h1>
+    <h1>Register</h1>
     <form @submit.prevent="login">
       <label>Email:</label>
       <input type="email" v-model="email" required><br>
+       <label>Phone:</label>
+      <input type="phone" v-model="phone" required><br>
       <label>Password:</label>
       <input type="password" v-model="password" required><br>
+      
       <div id="captcha-container">
         <img :src="captchaImageSrc" alt="Captcha Image" v-if="captchaImageSrc">
       </div>
@@ -26,6 +29,7 @@ export default {
   data() {
     return {
       email: '',
+      phone:'',
       password: '',
       captchaImageSrc: '',
       captchaID: '',
@@ -42,16 +46,15 @@ export default {
     login() {
       const formData = new FormData();
       formData.append('email', this.email);
+      formData.append('phone', this.phone);
       formData.append('password', this.password);
       formData.append('captcha_id', this.captchaID);
       formData.append('captcha_answer', this.captchaAnswer);
 
-      axios.post('/user/login', formData)
+      axios.post('/user/register', formData)
         .then(response => {
           console.log(response.data);
-          this.message = response.data.token;
-          this.error = '';
-          this.$router.replace('/register');
+        
         })
         .catch(error => {
           this.message = '';
