@@ -82,10 +82,18 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	log.Printf("User data: %+v\n", user)  // 调试绑定数据
+	log.Printf("User data: %+v\n", user)
 
 	if err := c.ShouldBind(&captchaResponse); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	log.Printf("Captcha data: %+v\n", captchaResponse)
+	log.Printf("Captcha data: %+v\n", captchaResponse.CaptchaID)
+	// 验证验证码
+	// 检查 CaptchaID 和 CaptchaAnswer 是否为空
+	if captchaResponse.CaptchaID == "" || captchaResponse.CaptchaAnswer == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "captcha_id and captcha_answer are required"})
 		return
 	}
 
