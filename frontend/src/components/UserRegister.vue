@@ -55,6 +55,7 @@ export default {
           console.log(response.data);
           Toast.success('Register Successful!');
           console.log('Navigating to login...'); // Debug log
+          this.fetchCaptcha();
           this.$router.push('/login')
             .then(() => {
               console.log('Navigation successful'); // Debug log
@@ -64,6 +65,7 @@ export default {
             });
         })
         .catch(error => {
+          this.fetchCaptcha();
           this.message = ''; 
           console.error('Error registering:', error.message); 
           Toast.fail(error.message);

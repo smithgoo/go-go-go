@@ -7,7 +7,7 @@ import (
 	//v1 "go-go-go/v1"
 	"go-go-go/database"
 	"go-go-go/router"
-
+	"fmt"
 	)
 
 func CORSMiddleware() gin.HandlerFunc {
@@ -29,7 +29,9 @@ func CORSMiddleware() gin.HandlerFunc {
 
 
 func main() {
+	gin.SetMode(gin.ReleaseMode)
 
+	fmt.Println("Current Gin mode:", gin.Mode())
 	database.InitDB( "root", "Jbnb123456", "127.0.0.1:3306","DBInfo")
 	//database.InitDB( "root", "Jbnb123456", "127.0.0.1:3306","GODB")
 

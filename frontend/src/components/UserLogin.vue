@@ -21,6 +21,7 @@
 
 <script>
 import axios from './axios';
+import storageService from './storage';
 
 export default {
   data() {
@@ -50,10 +51,13 @@ export default {
         .then(response => {
           console.log(response.data);
           this.message = response.data.token;
+          storageService.setItem(response.data.token,'token');
           this.error = '';
-          this.$router.replace('/register');
+          this.$router.replace('/home');
+          this.fetchCaptcha();
         })
         .catch(error => {
+          this.fetchCaptcha();
           this.message = '';
           this.error = 'Login failed. Please check your credentials.';
           console.error('Error logging in:', error);

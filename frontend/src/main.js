@@ -7,6 +7,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 // 导入你的组件
 import UserLogin from './components/UserLogin.vue';
 import UserRegister from './components/UserRegister.vue';
+import HomePage from './components/HomePage.vue';
 
 const router = createRouter({
     history: createWebHistory(),
@@ -14,6 +15,7 @@ const router = createRouter({
         { path: '/', redirect: '/register' },
         { path: '/register', component: UserRegister },
         { path: '/login', component: UserLogin },
+        { path: '/home', component: HomePage },
         // 可以根据需要添加其他路由
     ],
 });
