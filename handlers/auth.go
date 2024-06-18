@@ -11,6 +11,7 @@ import (
 	"go-go-go/database"
 	"log"
 	"net/http"
+	//"gorm.io/gorm"
 
 	"github.com/gin-gonic/gin"
 )
@@ -180,3 +181,19 @@ func GenerateCaptcha(c *gin.Context) {
 		"captcha_image": "data:image/png;base64," + captchaImage,
 	})
 }
+
+//修改角色控制
+//func UpdateUserRole(db *gorm.DB,userID unit,roleName RoleType) error {
+//	var user User
+//	var role Role
+//	if err := db.First(&user,userID).Error;err !=nil {
+//		return err
+//	}
+//
+//	if err := db.Where("name = ?",roleName).First(&role).Error;err != nil {
+//		return err
+//	}
+//
+//	user.RoleID = role.ID
+//	return db.Save(&user).Error
+//}

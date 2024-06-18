@@ -37,6 +37,10 @@ func main() {
 
 	database.DB.AutoMigrate(&models.Product{},&models2.VideoInfo{},&models2.User{})
 
+	database.DB.Create(&models.Role{Name:models.AdminRole})
+	database.DB.Create(&models.Role{Name:models.UserRole})
+	database.DB.Create(&models.Role{Name:models.ViewerRole})
+
 	r := gin.Default()
 	//r.Use(gin.Recovery())
 	// 设置静态文件服务，用于提供 Vue 前端打包后的静态资源
