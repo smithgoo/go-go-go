@@ -11,7 +11,7 @@ import (
 	"go-go-go/database"
 	"log"
 	"net/http"
-	//"gorm.io/gorm"
+	"gorm.io/gorm"
 
 	"github.com/gin-gonic/gin"
 )
@@ -59,6 +59,16 @@ func Register(c *gin.Context) {
 
 	// 对密码进行 MD5 哈希处理
 	user.Password = hashPassword(user.Password)
+
+	// 查找 "viewer" 角色
+	var viewerRole models.Role
+	if err := database.DB.Where("name = ?", models.ViewerRole).First(&viewerRole).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "viewer role not found"})
+		return
+	}
+
+	// 分配 "viewer" 角色
+	user.RoleID = viewerRole.ID
 
 	log.Printf("User data: %+v\n", user)  // 调试绑定数据
 
@@ -183,17 +193,17 @@ func GenerateCaptcha(c *gin.Context) {
 }
 
 //修改角色控制
-//func UpdateUserRole(db *gorm.DB,userID unit,roleName RoleType) error {
-//	var user User
-//	var role Role
-//	if err := db.First(&user,userID).Error;err !=nil {
-//		return err
-//	}
-//
-//	if err := db.Where("name = ?",roleName).First(&role).Error;err != nil {
-//		return err
-//	}
-//
-//	user.RoleID = role.ID
-//	return db.Save(&user).Error
-//}
+func UpdateUserRole(db *gorm.DB, userID uint, roleName models.RoleType) error {
+	var user models.User
+	var role models.Role
+	if err := db.First(&user, userID).Error; err != nil {
+		return err
+	}
+
+	if err := db.Where("name = ?", roleName).First(&role).Error; err != nil {
+		return err
+	}
+
+	user.RoleID = role.ID
+	return db.Save(&user).Error
+}
