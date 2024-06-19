@@ -30,7 +30,11 @@ func CORSMiddleware() gin.HandlerFunc {
 
 func main() {
 	//gin.SetMode(gin.ReleaseMode)
-
+	r := gin.Default()
+	//r.Use(gin.Recovery())
+	// 设置静态文件服务，用于提供 Vue 前端打包后的静态资源
+	//router.Static("/static", "./frontend/dist/static")
+	r.Use(CORSMiddleware())
 	fmt.Println("Current Gin mode:", gin.Mode())
 	database.InitDB( "root", "Jbnb123456", "127.0.0.1:3306","DBInfo")
 	//database.InitDB( "root", "Jbnb123456", "127.0.0.1:3306","GODB")
@@ -39,11 +43,7 @@ func main() {
 
 	initializeRoles()
 
-	r := gin.Default()
-	//r.Use(gin.Recovery())
-	// 设置静态文件服务，用于提供 Vue 前端打包后的静态资源
-	//router.Static("/static", "./frontend/dist/static")
-	r.Use(CORSMiddleware())
+
 	router.InitRouter(r)
 	r.Run(":9000")
 
