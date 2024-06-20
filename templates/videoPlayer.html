@@ -29,7 +29,7 @@
 </head>
 <body>
 <div class="video-container">
-    <h1>{{ .Title }}</h1>
+    <h1>{{ .VideoInfo.Title }}</h1>
     <video id="videoPlayer" controls></video>
 </div>
 
@@ -37,7 +37,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var video = document.getElementById('videoPlayer');
-        var videoSrc = '{{ .VideoURL }}';
+        var videoSrc = '{{ index .VideoInfo.Address 0 }}';
 
         function requestFullscreen(element) {
             if (element.requestFullscreen) {

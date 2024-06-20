@@ -153,6 +153,10 @@ func FentchCurrentVideoInfo(c *gin.Context)  {
 		}
 	})
 
-	// 返回爬取结果
-	c.JSON(http.StatusOK, gin.H{"data": videoInfo})
+	c.HTML(http.StatusOK, "videoPlayer.html", gin.H{
+		"VideoInfo": videoInfo,
+	})
+
+	//// 返回爬取结果
+	//c.JSON(http.StatusOK, gin.H{"data": videoInfo})
 }
