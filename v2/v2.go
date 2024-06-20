@@ -74,13 +74,15 @@ func SearchVideoByName(c *gin.Context)  {
 
 func PlayActionClick(c *gin.Context) {
 	queryParams := c.Request.URL.Query()
-
 	for key, value := range queryParams {
 		//log.Printf("Key: %s, Value: %s\n", key, value)
 		if key == "Address" {
 			queryParams["Address"] =  strings.Split(value[0],"#")
 		}
 	}
+	log.Printf("******************")
+	log.Printf("address: %s", queryParams["Address"])
+	log.Printf("******************")
 	queryParamsString := queryParams.Encode()
 
 	// 使用 log.Printf 打印编码后的字符串
@@ -99,7 +101,8 @@ func PlayActionClick(c *gin.Context) {
 	//log.Printf("queryParamsJSON: %s", queryParamsJSON)
 	//
 	title := c.DefaultQuery("title", "Default Video Title")
-	videoURL := c.DefaultQuery("videoURL", "https://v6.fentvoss.com/sdv6/202309/08/7qdsm8xvV81/video/index.m3u8")
+//https://v10.1080tg.com/202403/04/hrCAjCE4P32/video/index.m3u8
+	videoURL := c.DefaultQuery("videoURL", "https://v6.fentvoss.com/sdv6/202403/04/hrCAjCE4P32/video/index.m3u8")
 
 	c.HTML(http.StatusOK, "videoPlayer.html", gin.H{
 		"Title":    title,
