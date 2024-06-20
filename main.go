@@ -8,6 +8,7 @@ import (
 	"go-go-go/database"
 	"go-go-go/router"
 	"fmt"
+	"strings"
 	)
 
 func CORSMiddleware() gin.HandlerFunc {
@@ -35,6 +36,12 @@ func main() {
 	// 设置静态文件服务，用于提供 Vue 前端打包后的静态资源
 	//router.Static("/static", "./frontend/dist/static")
 	r.Use(CORSMiddleware())
+	// 中间件，将所有路径转换为小写
+	r.Use(func(c *gin.Context) {
+		c.Request.URL.Path = strings.ToLower(c.Request.URL.Path)
+		c.Next()
+	})
+
 	fmt.Println("Current Gin mode:", gin.Mode())
 	database.InitDB( "root", "Jbnb123456", "127.0.0.1:3306","DBInfo")
 	//database.InitDB( "root", "Jbnb123456", "127.0.0.1:3306","GODB")

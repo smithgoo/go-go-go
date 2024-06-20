@@ -98,8 +98,12 @@ func PlayActionClick(c *gin.Context) {
 	//}
 	//log.Printf("queryParamsJSON: %s", queryParamsJSON)
 	//
+	title := c.DefaultQuery("title", "Default Video Title")
+	videoURL := c.DefaultQuery("videoURL", "https://v6.fentvoss.com/sdv6/202309/08/7qdsm8xvV81/video/index.m3u8")
+
 	c.HTML(http.StatusOK, "videoPlayer.html", gin.H{
-		"info": paramsMap,
+		"Title":    title,
+		"VideoURL": videoURL,
 	})
 }
 
