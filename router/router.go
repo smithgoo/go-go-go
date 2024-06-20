@@ -5,6 +5,7 @@ import (
 	_ "github.com/gin-gonic/gin"
 	v2 "go-go-go/v2"
 	v1 "go-go-go/v1"
+	scrapy1 "go-go-go/scrapy"
 	"fmt"
 	"time"
 	"go-go-go/middleware"
@@ -68,6 +69,11 @@ func InitRouter(r *gin.Engine) {
 		GroupV2.GET("/searchVideos",v2.SearchVideoHtml)
 		GroupV2.POST("/searchVideos",v2.SearchVideoByName)
 		GroupV2.GET("/videoPlayer",v2.PlayActionClick)
+	}
+
+	GroupV4 := r.Group("/v4")
+	{
+		GroupV4.GET("/getScrapyInfo",scrapy1.FetchContent)
 	}
 
 
