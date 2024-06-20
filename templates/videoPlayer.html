@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ .Title }}</title>
+    <title>{{ .VideoInfo.Title }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -31,13 +31,18 @@
 <div class="video-container">
     <h1>{{ .VideoInfo.Title }}</h1>
     <video id="videoPlayer" controls></video>
+    <div>
+        {{if gt (len .VideoInfo.Address) 1}}
+        <a href="/scrape?url={{.VideoURL}}&pageIndex={{.PageIndex}}">Next</a>
+        {{end}}
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var video = document.getElementById('videoPlayer');
-        var videoSrc = '{{ index .VideoInfo.Address 0 }}';
+        var videoSrc = '{{index .VideoInfo.Address .PageIndex}}';
 
         function requestFullscreen(element) {
             if (element.requestFullscreen) {

@@ -2,33 +2,36 @@ package scrapy
 
 import (
 	"fmt"
-	"net/http"
 	"log"
+	"net/http"
+	"strconv"
+
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gin-gonic/gin"
 )
 
-
+// 定义一个结构体来存储链接信息
 type Link struct {
 	Text string `json:"text"`
 	Href string `json:"href"`
 }
 
+// 定义一个结构体来存储视频的详细信息
 type VideoDetailInfo struct {
-	Name string `json:"Name"`
-	NickName string `json:"NickName"`
-	Address  []string `json:"address"`
-	Title  string  `json:"title"`
-	Cover string `json:"cover"`
-	Content string `json:"content"`
-	OtherName string `json:"otherName"`
-	VideoDirector string `json:"videoDirector"`
-	VideoMaincharacter  string  `json:"videoMaincharacter"`
-	VideoType  string  `json:"videoType"`
-	VideoArea  string  `json:"videoArea"`
-	VideoLanguage  string  `json:"videoLanguage"`
-	VideoReleaseTime  string  `json:"videoReleaseTime"`
-	VideoUpdate  string  `json:"videoUpdate"`
+	Name               string   `json:"name"`
+	NickName           string   `json:"nickname"`
+	Address            []string `json:"address"`
+	Title              string   `json:"title"`
+	Cover              string   `json:"cover"`
+	Content            string   `json:"content"`
+	OtherName          string   `json:"otherName"`
+	VideoDirector      string   `json:"videoDirector"`
+	VideoMaincharacter string   `json:"videoMaincharacter"`
+	VideoType          string   `json:"videoType"`
+	VideoArea          string   `json:"videoArea"`
+	VideoLanguage      string   `json:"videoLanguage"`
+	VideoReleaseTime   string   `json:"videoReleaseTime"`
+	VideoUpdate        string   `json:"videoUpdate"`
 }
 
 // 爬取网页上的列表
@@ -77,9 +80,8 @@ func FetchContent(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": result})
 }
 
-
-//获取当前页面的所有详细信息c
-func FentchCurrentVideoInfo(c *gin.Context)  {
+// 获取当前页面的所有详细信息
+func FetchCurrentVideoInfo(c *gin.Context) {
 	// 从查询参数中获取 URL
 	url := c.Query("url")
 	if url == "" {
@@ -107,13 +109,16 @@ func FentchCurrentVideoInfo(c *gin.Context)  {
 		return
 	}
 
-	// 查找 ul/li/a 结构下的 a 标签
+	// 创建一个 VideoDetailInfo 实例
 	var videoInfo VideoDetailInfo
+
+	// 查找 div.vodInfo div.vodh h2 结构下的文本内容
 	doc.Find("div.vodInfo div.vodh h2").Each(func(i int, s *goquery.Selection) {
 		text := s.Text()
 		log.Printf(text)
 		videoInfo.Title = text
 	})
+
 	// 查找 div.vodinfobox ul li 结构下的文本内容
 	doc.Find("div.vodinfobox ul li").Each(func(i int, s *goquery.Selection) {
 		text := s.Text()
@@ -138,6 +143,7 @@ func FentchCurrentVideoInfo(c *gin.Context)  {
 		}
 	})
 
+	// 查找 div.vodBox div.vodImg img.lazy 结构下的 src 属性
 	doc.Find("div.vodBox div.vodImg img.lazy").Each(func(i int, s *goquery.Selection) {
 		value, exists := s.Attr("src")
 		if exists {
@@ -145,7 +151,7 @@ func FentchCurrentVideoInfo(c *gin.Context)  {
 		}
 	})
 
-	// 查找 div.vodplayinfo ul li a 结构下的链接
+	// 查找 div.vodplayinfo ul li input 结构下的 value 属性
 	doc.Find("div.vodplayinfo ul li input").Each(func(i int, s *goquery.Selection) {
 		value, exists := s.Attr("value")
 		if exists {
@@ -153,10 +159,17 @@ func FentchCurrentVideoInfo(c *gin.Context)  {
 		}
 	})
 
+	// 获取 pageIndex 参数
+	pageIndexStr := c.Query("pageIndex")
+	pageIndex, err := strconv.Atoi(pageIndexStr)
+	if err != nil || pageIndex < 0 || pageIndex >= len(videoInfo.Address) {
+		pageIndex = 0
+	}
+
+	// 返回爬取结果到 HTML 模板
 	c.HTML(http.StatusOK, "videoPlayer.html", gin.H{
 		"VideoInfo": videoInfo,
+		"PageIndex": pageIndex,
 	})
-
-	//// 返回爬取结果
-	//c.JSON(http.StatusOK, gin.H{"data": videoInfo})
 }
+

@@ -74,7 +74,7 @@ func InitRouter(r *gin.Engine) {
 	GroupV4 := r.Group("/v4")
 	{
 		GroupV4.GET("/getScrapyInfo",scrapy1.FetchContent)
-		GroupV4.GET("/getVideoDetail",scrapy1.FentchCurrentVideoInfo)
+		GroupV4.GET("/getVideoDetail",scrapy1.FetchCurrentVideoInfo)
 	}
 
 
