@@ -1,18 +1,30 @@
 package router
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	_ "github.com/gin-gonic/gin"
-	v2 "go-go-go/v2"
-	v1 "go-go-go/v1"
-	scrapy1 "go-go-go/scrapy"
-	"fmt"
-	"time"
-	"go-go-go/middleware"
 	"go-go-go/handlers"
+	"go-go-go/middleware"
+	scrapy1 "go-go-go/scrapy"
+	v1 "go-go-go/v1"
+	v2 "go-go-go/v2"
+	"strings"
+	"time"
 )
 import _ "net/url"
 import _ "strconv"
+
+func addCaseInsensitiveRoute(group *gin.RouterGroup, method, path string, handler gin.HandlerFunc) {
+	// 注册原始路径
+	group.Handle(method, path, handler)
+
+	// 注册小写路径
+	lowerPath := strings.ToLower(path)
+	if lowerPath != path {
+		group.Handle(method, lowerPath, handler)
+	}
+}
 
 func InitRouter(r *gin.Engine) {
 
@@ -35,6 +47,7 @@ func InitRouter(r *gin.Engine) {
 
 	GroupV3 := r.Group("/user")
 	{
+
 		GroupV3.GET("/register", handlers.ShowRegisterPage)
 		GroupV3.GET("/login", handlers.ShowLoginPage)
 
@@ -74,7 +87,8 @@ func InitRouter(r *gin.Engine) {
 	GroupV4 := r.Group("/v4")
 	{
 		GroupV4.GET("/getScrapyInfo",scrapy1.FetchContent)
-		GroupV4.GET("/getVideoDetail",scrapy1.FetchCurrentVideoInfo)
+		//GroupV4.GET("/getVideoDetail",scrapy1.FetchCurrentVideoInfo)
+		addCaseInsensitiveRoute(GroupV4,"GET","/getVideoDetail",scrapy1.FetchCurrentVideoInfo)
 	}
 
 
