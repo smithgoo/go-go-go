@@ -70,20 +70,21 @@
         <th>Actions</th>
     </tr>
     {{ range $index, $product := .products }}
-    <tr>
-        <td>{{ .ID }}</td>
-        <td>{{ .Title }}</td>
-        <td>{{ .Cover }}</td>
-        <td data-address="{{ .Address }}"></td>
-        <td>
-            <button type="button" onclick='playVideo({
-                "ID": "{{ $product.ID }}",
-                "Title": "{{ $product.Title }}",
-                "Cover": "{{ $product.Cover }}",
-                "Address": "{{ $product.Address }}"
-            })'>播放</button>
-        </td>
-    </tr>
+            <tr>
+                <td>{{ $product.ID }}</td>
+                <td>{{ $product.Title }}</td>
+                <td>{{ $product.Cover }}</td>
+                <td data-address="{{ $product.Address }}"></td>
+                <td>
+                    <button type="button" onclick='playVideo({
+                        "ID": "{{ $product.ID }}",
+                        "Title": "{{ $product.Title }}",
+                        "Cover": "{{ $product.Cover }}",
+                        "Address": "https://v10.fentvoss.com/sdv10/202405/23/JYNuz4NKU515/video/index.m3u8",
+
+                    })'>播放</button> 
+                </td>
+            </tr>
     {{ end }}
 </table>
 </body>

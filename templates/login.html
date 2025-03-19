@@ -1,7 +1,78 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.0.0/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vant@3.0/lib/vant.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vant@3.0/lib/index.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #218838;
+        }
+
+        #captcha-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        #captchaImage {
+            cursor: pointer;
+            margin-left: 10px;
+            height: 40px;
+        }
+    </style>
     <script>
         function fetchCaptcha() {
             fetch('/user/captcha')
@@ -13,26 +84,71 @@
                 .catch(error => console.error('Error fetching captcha:', error));
         }
 
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchCaptcha();
+            document.getElementById('captchaImage').addEventListener('click', fetchCaptcha);
+        });
+
+
+          // Function to handle successful login
+          function handleLoginSuccess(token, redirectUrl) {
+            if (token && token.length > 0) {
+                // Store the token in localStorage
+                localStorage.setItem('Authorization', token);
+
+                // Show toast message
+                vant.Toast.success("Login success!");
+
+                // Redirect to the specified URL after a delay
+                window.location.href = redirectUrl;
+            } else {
+                vant.Toast.fail('Login failed. Please try again.');
+            }
+        }
+
+
+        function submitForm(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const formData = new FormData(document.getElementById('loginForm'));
+
+            fetch('/user/login', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Login response:', data);
+                handleLoginSuccess(data.token, '/user/home');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                vant.Toast.fail('An error occurred. Please try again.');
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', (event) => {
             fetchCaptcha();
         });
     </script>
 </head>
 <body>
-<h1>Login</h1>
-<form action="/user/login" method="POST">
-    <label>Email or Phone:</label>
-    <input type="text" name="email" required><br>
-    <label>Password:</label>
-    <input type="password" name="password" required><br>
+    <form id="loginForm" action="loginForm" onsubmit="submitForm(event)">
+        <h1>Welcome to Login</h1>
+        <label for="email">Email or Phone:</label>
+        <input type="text" id="email" name="email" required><br>
+        
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br>
 
-    <div id="captcha-container">
-        <img id="captchaImage" src="" alt="Captcha Image">
-    </div>
-    <label for="captcha">Captcha:</label>
-    <input type="text" id="captchaAnswer" name="captcha_answer" required><br><br>
-    <input type="hidden" id="captchaID" name="captcha_id">
-    <input type="submit" value="Login">
-</form>
+        <label for="captchaAnswer">Captcha:</label>
+        <div id="captcha-container">
+            <input type="text" id="captchaAnswer" name="captcha_answer" required>
+            <img id="captchaImage" src="" alt="Captcha Image">
+        </div>
+        
+        <input type="hidden" id="captchaID" name="captcha_id">
+        <button type="submit">Login</button>
+    </form>
 </body>
 </html>

@@ -2,13 +2,15 @@ package v2
 
 import (
 	//"fmt"
-	"github.com/gin-gonic/gin"
-	models2 "go-go-go/models"
-	"go-go-go/models"
 	"go-go-go/database"
+	"go-go-go/models"
+	models2 "go-go-go/models"
 	"log"
 	"net/url"
+	"strconv"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 
 	//"strconv"
 
@@ -18,12 +20,12 @@ import (
 )
 
 func PingPong(c *gin.Context) {
-	c.JSON(200,gin.H{
-		"message":"pong",
+	c.JSON(200, gin.H{
+		"message": "pong",
 	})
 }
 
-func GetAllInfoList(c *gin.Context)  {
+func GetAllInfoList(c *gin.Context) {
 	var videos []models2.VideoInfo
 
 	paginatedResult, err := database.Paginate(c, database.DB, &models2.VideoInfo{}, &videos)
@@ -34,23 +36,62 @@ func GetAllInfoList(c *gin.Context)  {
 	}
 
 	//c.JSON(http.StatusOK, paginatedResult.Data)
-	c.HTML(http.StatusOK,"videoInfoList.html",gin.H{
-		"products":paginatedResult.Data,
+	c.HTML(http.StatusOK, "videoInfoList.html", gin.H{
+		"products": paginatedResult.Data,
 	})
 
 }
 
-func SearchVideoHtml(c *gin.Context)  {
-	c.HTML(http.StatusOK,"videoSearch.html",gin.H{
-		"title":"videoSearch",
+func GetHomeAllInfoList(c *gin.Context) {
+	var videos []models2.VideoInfo
+
+	// 获取查询参数 page 和 size，默认值分别为 1 和 10
+	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if err != nil || page < 1 {
+		page = 1
+	}
+
+	size, err := strconv.Atoi(c.DefaultQuery("size", "10"))
+	if err != nil || size < 1 {
+		size = 10
+	}
+
+	// 计算 offset 和 limit
+	offset := (page - 1) * size
+
+	// 查询数据库并分页
+	var total int64
+	result := database.DB.Model(&models2.VideoInfo{}).Count(&total).Offset(offset).Limit(size).Find(&videos)
+	if result.Error != nil {
+		log.Println("Error fetching videos:", result.Error)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		return
+	}
+
+	// 返回分页结果
+	c.JSON(http.StatusOK, gin.H{
+		"page":   page,
+		"size":   size,
+		"total":  total,  // 数据库中总条数
+		"videos": videos, // 当前页的视频数据
 	})
 }
 
-func SearchVideoByName(c *gin.Context)  {
-	var products []models2.VideoInfo
+func SearchVideoHtml(c *gin.Context) {
+	c.HTML(http.StatusOK, "videoSearch.html", gin.H{
+		"title": "videoSearch",
+	})
+}
+
+func SearchVideoByName(c *gin.Context) {
+	var products []models.VideoInfo
 	keyword := c.PostForm("keyword")
 
+	// 打印 keyword 确保前端传值正确
+	log.Println("Received keyword:", keyword)
+
 	query := database.DB
+
 	if keyword != "" {
 		keywordPattern := "%" + keyword + "%"
 		query = query.Where(
@@ -60,24 +101,29 @@ func SearchVideoByName(c *gin.Context)  {
 		)
 	}
 
-	paginatedResult, err := database.PaginateSearch(c, database.DB, &models.Product{}, &products,query)
+	// 启用 SQL 语句调试
+	query = query.Debug()
+
+	// 执行查询并分页
+	paginatedResult, err := database.PaginateSearch(c, database.DB, &models.VideoInfo{}, &products, query)
 	if err != nil {
 		log.Println("Error fetching products:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(), // 仅用于开发环境，生产环境应返回通用错误信息
+		})
 		return
 	}
 
+	// 成功返回结果
 	c.JSON(http.StatusOK, paginatedResult)
-
 }
-
 
 func PlayActionClick(c *gin.Context) {
 	queryParams := c.Request.URL.Query()
 	for key, value := range queryParams {
 		//log.Printf("Key: %s, Value: %s\n", key, value)
 		if key == "Address" {
-			queryParams["Address"] =  strings.Split(value[0],"#")
+			queryParams["Address"] = strings.Split(value[0], "#")
 		}
 	}
 	log.Printf("******************")
@@ -101,12 +147,11 @@ func PlayActionClick(c *gin.Context) {
 	//log.Printf("queryParamsJSON: %s", queryParamsJSON)
 	//
 	title := c.DefaultQuery("title", "Default Video Title")
-//https://v10.1080tg.com/202403/04/hrCAjCE4P32/video/index.m3u8
-	videoURL := c.DefaultQuery("videoURL", "https://v6.fentvoss.com/sdv6/202403/04/hrCAjCE4P32/video/index.m3u8")
+	//https://v10.1080tg.com/202403/04/hrCAjCE4P32/video/index.m3u8
+	videoURL := c.DefaultQuery("videoURL", queryParams["Address"][0])
 
 	c.HTML(http.StatusOK, "videoPlayer.html", gin.H{
 		"Title":    title,
 		"VideoURL": videoURL,
 	})
 }
-

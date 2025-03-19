@@ -16,3 +16,10 @@ post
 get
 
     curl http://localhost:8080/v1/product/0
+
+
+前端校验 token的时候需要去掉引号
+
+下面是测试
+curl -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMiwiZXhwIjoxNzI2Mjk0Mjg0fQ.VvKFR-1cV6AasyS84VYHZHa5w_l2gmCt7-nKhGqMLQg"  http://192.168.1.90:8080/user/home
+

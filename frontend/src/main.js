@@ -1,29 +1,10 @@
 import { createApp } from 'vue';
 import App from './App.vue';
-import Vant, { Toast } from 'vant';
-import 'vant/lib/index.css';
-import { createRouter, createWebHistory } from 'vue-router';
+import Vant from 'vant';
+import 'vant/lib/index.css'; // 引入 Vant 的 CSS 样式
+import router  from './router';
 
-// 导入你的组件
-import UserLogin from './components/UserLogin.vue';
-import UserRegister from './components/UserRegister.vue';
-import HomePage from './components/HomePage.vue';
-
-const router = createRouter({
-    history: createWebHistory(),
-    routes: [
-        { path: '/', redirect: '/register' },
-        { path: '/register', component: UserRegister },
-        { path: '/login', component: UserLogin },
-        { path: '/home', component: HomePage },
-        // 可以根据需要添加其他路由
-    ],
-});
-
-const app = createApp(App);
-
-app.use(router);
-app.use(Vant);
-app.use(Toast);
-
-app.mount('#app');
+createApp(App)
+.use(router)
+.use(Vant) 
+.mount('#app');

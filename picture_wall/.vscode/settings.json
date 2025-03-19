@@ -1,0 +1,8 @@
+{
+  "cSpell.words": [
+    "captchainfo"
+  ],
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1,
+  "editor.formatOnSaveMode": "modificationsIfAvailable"
+}

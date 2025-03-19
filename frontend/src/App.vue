@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <router-view></router-view>
+    <router-view/>
   </div>
 </template>
 
@@ -8,6 +8,11 @@
 
 export default {
   name: 'App',
+  watch: {
+    $route() {
+      window.scrollTo(0, 0);
+    },
+  },
 };
 </script>
 

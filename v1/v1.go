@@ -9,15 +9,15 @@ import (
 	"strconv"
 )
 
-func ShowHomePage(c *gin.Context)  {
-	c.HTML(http.StatusOK,"index.html",gin.H{
-		"title":"Home Page",
+func ShowHomePage(c *gin.Context) {
+	c.HTML(http.StatusOK, "index.html", gin.H{
+		"title": "Home Page",
 	})
 }
 
-func ShowAddProductPage(c *gin.Context)  {
-	c.HTML(http.StatusOK,"add.html",gin.H{
-		"title":"Add Product",
+func ShowAddProductPage(c *gin.Context) {
+	c.HTML(http.StatusOK, "add.html", gin.H{
+		"title": "Add Product",
 	})
 }
 
@@ -32,18 +32,18 @@ func ShowEditProductPage(c *gin.Context) {
 	c.HTML(http.StatusOK, "edit.html", product)
 }
 
-func  AddProduct(c *gin.Context)  {
+func AddProduct(c *gin.Context) {
 	var product models.Product
 	product.Name = c.PostForm("name")
-	price,err := strconv.ParseFloat(c.PostForm("price"),64)
-	if err !=nil {
-		c.JSON(http.StatusBadRequest,gin.H{"error":"Invalid price"})
+	price, err := strconv.ParseFloat(c.PostForm("price"), 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid price"})
 		return
 	}
 	product.Price = price
 
 	database.DB.Create(&product)
-	
+
 	//var existingProduct models.Product
 	//if err := database.DB.Where("name = ?",product.Name).First(&existingProduct).Error; err ==nil {
 	//	if c.GetHeader("Content-Type") == "application/json" {
@@ -64,25 +64,25 @@ func  AddProduct(c *gin.Context)  {
 
 }
 
-func DeleteProduct(c *gin.Context){
-	id,err := strconv.Atoi(c.Param("id"))
+func DeleteProduct(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest,gin.H{"error":"Invalid product ID"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid product ID"})
 		return
 	}
 
 	var product models.Product
-	if err := database.DB.First(&product,id).Error;  err != nil {
-		c.JSON(http.StatusNotFound,gin.H{"error":"Product not found"})
+	if err := database.DB.First(&product, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Product not found"})
 		return
 	}
 
 	if err := database.DB.Delete(&product).Error; err != nil {
-		c.JSON(http.StatusInternalServerError,gin.H{"error":"delete fail"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "delete fail"})
 		return
 	}
 
-	c.JSON(http.StatusOK,gin.H{"success":true})
+	c.JSON(http.StatusOK, gin.H{"success": true})
 }
 
 func EditProduct(c *gin.Context) {
@@ -116,13 +116,13 @@ func EditProduct(c *gin.Context) {
 	}
 }
 
-func SearchGetProductWithKw(c *gin.Context){
-	c.HTML(http.StatusOK,"search.html",gin.H{
-		"title":"search Product",
+func SearchGetProductWithKw(c *gin.Context) {
+	c.HTML(http.StatusOK, "search.html", gin.H{
+		"title": "search Product",
 	})
 }
 
-func SearchProductWithKw(c *gin.Context){
+func SearchProductWithKw(c *gin.Context) {
 	println("search action ~~~~~~~~~~~~~~~~")
 	var products []models.Product
 	keyword := c.PostForm("keyword")
@@ -141,24 +141,21 @@ func SearchProductWithKw(c *gin.Context){
 	})
 }
 
-
-
-func GetProduct(c *gin.Context){
+func GetProduct(c *gin.Context) {
 	var product models.Product
 	id := c.Param("id")
-	if err := database.DB.Order("created_at desc").First(&product,id).Error; err!=nil {
-		c.JSON(http.StatusNotFound,gin.H{"error":"Product not found"})
+	if err := database.DB.Order("created_at desc").First(&product, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Product not found"})
 		return
 	}
-	c.JSON(http.StatusOK,product)
+	c.JSON(http.StatusOK, product)
 }
 
-
-
-func ListProducts(c *gin.Context)  {
+func ListProducts(c *gin.Context) {
 	var products []models.Product
 	database.DB.Find(&products)
-	c.HTML(http.StatusOK,"list.html",gin.H{
-		"products":products,
-	})
+	//c.HTML(http.StatusOK,"list.html",gin.H{
+	//	"products":products,
+	//})
+	c.JSON(http.StatusOK, products)
 }

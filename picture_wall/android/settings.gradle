@@ -1,0 +1,36 @@
+// 插件管理：必须放在最前面
+pluginManagement {
+    repositories {
+        maven { url 'https://mirrors.cloud.tencent.com/nexus/repository/maven-public/' }
+        google()
+        mavenCentral()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS) // 确保优先使用 settings.gradle 中的仓库
+    repositories {
+        maven { url 'https://mirrors.cloud.tencent.com/nexus/repository/maven-public/' }
+        google()
+        mavenCentral()
+    }
+}
+
+
+// 包含子项目 ':app'
+include ':app'
+
+// 读取 local.properties 文件
+def localPropertiesFile = new File(rootProject.projectDir, "local.properties")
+def properties = new Properties()
+
+assert localPropertiesFile.exists(), "local.properties 文件未找到"
+localPropertiesFile.withReader("UTF-8") { reader -> properties.load(reader) }
+
+// 读取 Flutter SDK 路径
+def flutterSdkPath = properties.getProperty("flutter.sdk")
+assert flutterSdkPath != null, "flutter.sdk 未在 local.properties 中配置"
+
+// 应用 Flutter 插件
+apply from: "${flutterSdkPath}/packages/flutter_tools/gradle/app_plugin_loader.gradle"
+
+println "Flutter SDK 路径：${flutterSdkPath}"

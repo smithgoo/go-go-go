@@ -3,13 +3,11 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"go-go-go/database"
 	"go-go-go/models"
 	models2 "go-go-go/models"
-	"strings"
-
-	//v1 "go-go-go/v1"
-	"go-go-go/database"
 	"go-go-go/router"
+	"strings"
 )
 
 func CORSMiddleware() gin.HandlerFunc {
@@ -28,10 +26,9 @@ func CORSMiddleware() gin.HandlerFunc {
 	}
 }
 
-
-
 func main() {
-	//gin.SetMode(gin.ReleaseMode)
+	gin.SetMode(gin.ReleaseMode)
+
 	r := gin.Default()
 
 	r.Use(func(c *gin.Context) {
@@ -39,24 +36,17 @@ func main() {
 		c.Next()
 	})
 
-	//r.Use(gin.Recovery())
-	// 设置静态文件服务，用于提供 Vue 前端打包后的静态资源
-	//router.Static("/static", "./frontend/dist/static")
 	r.Use(CORSMiddleware())
 	// 中间件，将所有路径转换为小写
 
-
 	fmt.Println("Current Gin mode:", gin.Mode())
-	database.InitDB( "root", "Jbnb123456", "127.0.0.1:3306","DBInfo")
-	//database.InitDB( "root", "Jbnb123456", "127.0.0.1:3306","GODB")
+	database.InitDB("root", "Jbnb123456", "127.0.0.1:3306", "DBInfo")
 
-	database.DB.AutoMigrate(&models.Product{},&models2.VideoInfo{},&models2.User{})
+	database.DB.AutoMigrate(&models.Product{}, &models2.VideoInfo{}, &models2.User{})
 
 	initializeRoles()
 
-
 	router.InitRouter(r)
-
 
 	r.Run(":9000")
 

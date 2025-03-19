@@ -1,11 +1,10 @@
 package handlers
 
 import (
+	"github.com/gin-gonic/gin"
 	//"go-go-go/models"
 	"net/http"
-	"github.com/gin-gonic/gin"
 )
-
 
 func Home(c *gin.Context) {
 	//userID := c.MustGet("userID").(uint)
@@ -14,5 +13,5 @@ func Home(c *gin.Context) {
 	//	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	//	return
 	//}
-	c.JSON(http.StatusOK, gin.H{"message": "welcome home"})
+	c.JSON(http.StatusOK, gin.H{"message": "success!"})
 }
