@@ -85,31 +85,46 @@ func SearchVideoHtml(c *gin.Context) {
 
 func SearchVideoByName(c *gin.Context) {
 	var products []models.VideoInfo
-	keyword := c.PostForm("keyword")
+	keyword := strings.TrimSpace(c.PostForm("keyword")) // 处理空格
 
-	// 打印 keyword 确保前端传值正确
 	log.Println("Received keyword:", keyword)
 
 	query := database.DB
 
 	if keyword != "" {
-		keywordPattern := "%" + keyword + "%"
-		query = query.Where(
-			database.DB.Where("address LIKE ?", keywordPattern).
-				Or("content LIKE ?", keywordPattern).
-				Or("title LIKE ?", keywordPattern),
-		)
+		// 将关键字拆解为单个字词
+		keywords := strings.Split(keyword, "")
+		query = query.Where("") // 初始化查询条件
+
+		for _, word := range keywords {
+			if word != "" { // 过滤空字符
+				keywordPattern := "%" + word + "%"
+				query = query.Or("title LIKE ?", keywordPattern)
+			}
+		}
+	} else {
+		// 如果关键字为空，直接返回空结果或所有数据
+		c.JSON(http.StatusOK, gin.H{
+			"data":   []models.VideoInfo{},
+			"total":  0,
+			"offset": 0,
+			"limit":  0,
+		})
+		return
 	}
 
 	// 启用 SQL 语句调试
 	query = query.Debug()
 
+	// 打印最终 SQL 语句
+	// log.Println("Generated SQL:", query.ToSQL())
+
 	// 执行查询并分页
-	paginatedResult, err := database.PaginateSearch(c, database.DB, &models.VideoInfo{}, &products, query)
+	paginatedResult, err := database.PaginateSearch(c, query, &models.VideoInfo{}, &products, query)
 	if err != nil {
 		log.Println("Error fetching products:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(), // 仅用于开发环境，生产环境应返回通用错误信息
+			"error": err.Error(),
 		})
 		return
 	}
@@ -117,6 +132,7 @@ func SearchVideoByName(c *gin.Context) {
 	// 成功返回结果
 	c.JSON(http.StatusOK, paginatedResult)
 }
+
 
 func PlayActionClick(c *gin.Context) {
 	queryParams := c.Request.URL.Query()
