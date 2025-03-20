@@ -92,25 +92,8 @@ func SearchVideoByName(c *gin.Context) {
 	query := database.DB
 
 	if keyword != "" {
-		// 将关键字拆解为单个字词
-		keywords := strings.Split(keyword, "")
-		query = query.Where("") // 初始化查询条件
-
-		for _, word := range keywords {
-			if word != "" { // 过滤空字符
-				keywordPattern := "%" + word + "%"
-				query = query.Or("title LIKE ?", keywordPattern)
-			}
-		}
-	} else {
-		// 如果关键字为空，直接返回空结果或所有数据
-		c.JSON(http.StatusOK, gin.H{
-			"data":   []models.VideoInfo{},
-			"total":  0,
-			"offset": 0,
-			"limit":  0,
-		})
-		return
+		keywordPattern := "%" + keyword + "%"
+		query = query.Where("LOWER(title) LIKE LOWER(?)", keywordPattern)
 	}
 
 	// 启用 SQL 语句调试
@@ -132,7 +115,6 @@ func SearchVideoByName(c *gin.Context) {
 	// 成功返回结果
 	c.JSON(http.StatusOK, paginatedResult)
 }
-
 
 func PlayActionClick(c *gin.Context) {
 	queryParams := c.Request.URL.Query()
